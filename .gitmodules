@@ -1,0 +1,4 @@
+[submodule "ch3/react-native-component"]
+	url = https://github.com/POL6463/my-first-react-native.git
+[submodule "ch4/react-native-style"]
+	url = https://github.com/POL6463/my-first-react-native.git
