@@ -6,6 +6,8 @@ import Input from "./components/Input";
 import { images } from "./images";
 import IconButton from "./components/IconButton";
 import Task from "./components/Task";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import AppLoading from "expo-app-loading";
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -27,24 +29,61 @@ const List = styled.ScrollView`
 
 export default function App() {
   const width = Dimensions.get("window").width;
+
+  const [isReady, setIsReady] = useState(false);
   const [newTask, setNewTask] = useState("");
-  const [tasks, setTasks] = useState({
-    1: { id: "1", text: "Hanbit", complete: false },
-    2: { id: "2", text: "React Native", complete: true },
-    3: { id: "3", text: "React Native Sample", complete: false },
-    4: { id: "4", text: "Edit TODO Item", complete: false },
-  });
+  const [tasks, setTasks] = useState({});
+
+  const _saveTasks = async (tasks) => {
+    try {
+      await AsyncStorage.setItem("tasks", JSON.stringify(tasks));
+      setTasks(tasks);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const _loadTasks = async () => {
+    const loadedTasks = await AsyncStorage.getItem("tasks");
+    setTasks(JSON.parse(loadedTasks || "{}"));
+  };
 
   const _addTask = () => {
-    alert(`Add: ${newTask}`);
+    const ID = Date.now().toString();
+    const newTaskObject = {
+      [ID]: { id: ID, text: newTask, completed: false },
+    };
     setNewTask("");
+    _saveTasks({ ...tasks, ...newTaskObject });
+  };
+
+  const _deleteTask = (id) => {
+    const currentTasks = Object.assign({}, tasks);
+    delete currentTasks[id];
+    _saveTasks(currentTasks);
+  };
+
+  const _toggleTask = (id) => {
+    const currentTasks = Object.assign({}, tasks);
+    currentTasks[id]["completed"] = !currentTasks[id]["completed"];
+    _saveTasks(currentTasks);
+  };
+
+  const _updateTask = (item) => {
+    const currentTasks = Object.assign({}, tasks);
+    currentTasks[item.id] = item;
+    _saveTasks(currentTasks);
   };
 
   const _handleTextChange = (text) => {
     setNewTask(text);
   };
 
-  return (
+  const _onBlur = () => {
+    setNewTask("");
+  };
+
+  return isReady ? (
     <ThemeProvider theme={theme}>
       <Container>
         <StatusBar
@@ -57,15 +96,28 @@ export default function App() {
           value={newTask}
           onChangeText={_handleTextChange}
           onSubmitEditing={_addTask}
+          onBlur={_onBlur}
         />
         <List width={width}>
           {Object.values(tasks)
             .reverse()
             .map((item) => (
-              <Task text={item.text} />
+              <Task
+                key={item.id}
+                item={item}
+                deleteTask={_deleteTask}
+                toggleTask={_toggleTask}
+                updateTask={_updateTask}
+              />
             ))}
         </List>
       </Container>
     </ThemeProvider>
+  ) : (
+    <AppLoading
+      startAsync={_loadTasks}
+      onFinish={() => setIsReady(true)}
+      onError={console.error}
+    />
   );
 }
