@@ -5,15 +5,6 @@ import IconButton from "./IconButton";
 import { images } from "../images";
 import Input from "./Input";
 
-const Container = styled.View`
-  flex-direction: row;
-  align-items: center;
-  background-color: ${({ theme }) => theme.itemBackground};
-  border-radius: 10px;
-  padding: 5px;
-  margin: 3px 0px;
-`;
-
 const Contents = styled.Text`
   flex: 1;
   font-size: 24px;

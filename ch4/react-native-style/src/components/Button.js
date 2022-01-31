@@ -3,7 +3,7 @@ import styled from "styled-components/native";
 
 const ButtonContainer = styled.TouchableOpacity`
   background-color: ${(props) =>
-    props.title === "Hanbit" ? props.theme.blue : props.theme.purple};
+    props.title === "김민웅" ? props.theme.blue : props.theme.purple};
   border-radius: 15px;
   padding: 15px 40px;
   margin: 10px 0px;
