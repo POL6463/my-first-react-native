@@ -13,7 +13,7 @@ const StyledText = styled.Text`
 const Home = ({ navigation }) => {
   return (
     <Container>
-      <StyledText>Home</StyledText>
+      <StyledText>Hhome</StyledText>
       <Button
         title="go to the list screen"
         onPress={() => navigation.navigate("List")}
